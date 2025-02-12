@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { GameBoard } from "@/components/GameBoard";
 import { ScoreBoard } from "@/components/ScoreBoard";
@@ -8,6 +9,9 @@ import Cookies from "js-cookie";
 type Cell = "X" | "O" | null;
 
 const Index = () => {
+  // Define konamiCode at the top level of the component
+  const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39]; // up, up, down, down, left, right, left, right
+
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
   const [scores, setScores] = useState({ X: 0, O: 0 });
