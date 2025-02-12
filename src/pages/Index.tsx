@@ -1,23 +1,32 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { GameBoard } from "@/components/GameBoard";
 import { ScoreBoard } from "@/components/ScoreBoard";
 import { GameStatus } from "@/components/GameStatus";
 import { motion, AnimatePresence } from "framer-motion";
+import { LogIn } from "lucide-react";
 import Cookies from "js-cookie";
 
 type Cell = "X" | "O" | null;
 
 const Index = () => {
-  // Define konamiCode at the top level of the component
-  const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39]; // up, up, down, down, left, right, left, right
-
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
   const [scores, setScores] = useState({ X: 0, O: 0 });
   const [winningCombination, setWinningCombination] = useState<number[] | null>(null);
-  const [konami, setKonami] = useState<number[]>([]);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+
+  const handleLoginClick = () => {
+    setClickCount(prev => {
+      const newCount = prev + 1;
+      if (newCount === 7) { // Show easter egg after 7 clicks
+        setShowEasterEgg(true);
+        Cookies.set('easter_egg_found', 'true', { expires: 365 });
+        return 0;
+      }
+      return newCount;
+    });
+  };
 
   const checkWinner = (squares: Cell[]): { winner: Cell; combination: number[] } | null => {
     const lines = [
@@ -64,24 +73,6 @@ const Index = () => {
 
   const closeEasterEgg = () => setShowEasterEgg(false);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const newKonami = [...konami, e.keyCode];
-      if (newKonami.length > konamiCode.length) {
-        newKonami.shift();
-      }
-      setKonami(newKonami);
-
-      if (newKonami.join(',') === konamiCode.join(',')) {
-        setShowEasterEgg(true);
-        Cookies.set('easter_egg_found', 'true', { expires: 365 });
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [konami]);
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -89,6 +80,15 @@ const Index = () => {
       className="min-h-screen bg-gradient-to-br from-game-primary to-white flex flex-col items-center justify-center p-4"
     >
       <div className="relative w-full max-w-md">
+        <motion.button
+          onClick={handleLoginClick}
+          className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 text-sm text-game-muted hover:text-game-secondary transition-colors"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LogIn className="w-4 h-4" />
+          Login
+        </motion.button>
         <ScoreBoard scores={scores} currentPlayer={currentPlayer} />
         <GameBoard
           board={board}
