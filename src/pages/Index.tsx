@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { GameBoard } from "@/components/GameBoard";
 import { ScoreBoard } from "@/components/ScoreBoard";
@@ -100,6 +101,9 @@ const Index = () => {
           isDraw={isDraw}
           onPlayAgain={handlePlayAgain}
         />
+        <div className="mt-8 text-center text-sm text-game-muted">
+          Created by the Tech Champions
+        </div>
         <AnimatePresence>
           {showEasterEgg && (
             <motion.div
